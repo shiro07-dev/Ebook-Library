@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Ebook</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .ebook-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .ebook-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .ebook-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn-read {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-download {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .upload-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+        }
+
+        #flipbook-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 1000;
+        }
+
+        #flipbook-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            height: 90%;
+            background: white;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="ebook-container">
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <h2>Upload Ebook PDF</h2>
+            <form id="upload-form">
+                <input type="file" id="pdf-upload" accept=".pdf" required>
+                <input type="text" id="ebook-title" placeholder="Judul Ebook" required>
+                <button type="submit" class="btn btn-read">Upload</button>
+            </form>
+        </div>
+
+        <!-- Ebook List -->
+        <div id="ebook-list">
+            <!-- Ebook cards will be added here dynamically -->
+        </div>
+    </div>
+
+    <!-- FlipHTML5 Modal -->
+    <div id="flipbook-modal">
+        <span class="close-modal">&times;</span>
+        <iframe id="flipbook-frame" frameborder="0"></iframe>
+    </div>
+
+    <script>
+        // Simpan data ebook (dalam praktiknya, Anda perlu menggunakan database)
+        let ebooks = [];
+
+        // Handle form upload
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const file = document.getElementById('pdf-upload').files[0];
+            const title = document.getElementById('ebook-title').value;
+            
+            // Dalam praktiknya, Anda perlu mengupload file ke server
+            // Ini hanya simulasi
+            const newEbook = {
+                id: Date.now(),
+                title: title,
+                filename: file.name,
+                // Dalam praktiknya, ini akan menjadi URL sebenarnya setelah upload
+                pdfUrl: URL.createObjectURL(file),
+                // URL FlipHTML5 (Anda perlu menggantinya dengan URL yang sebenarnya)
+                flipUrl: 'https://online.fliphtml5.com/your-flipbook-url'
+            };
+            
+            ebooks.push(newEbook);
+            renderEbooks();
+            this.reset();
+        });
+
+        // Render ebook list
+        function renderEbooks() {
+            const container = document.getElementById('ebook-list');
+            container.innerHTML = ebooks.map(ebook => `
+                <div class="ebook-card">
+                    <div class="ebook-title">${ebook.title}</div>
+                    <div class="button-group">
+                        <button class="btn btn-read" onclick="openFlipbook('${ebook.flipUrl}')">
+                            Baca
+                        </button>
+                        <a href="${ebook.pdfUrl}" download="${ebook.filename}" 
+                           class="btn btn-download">
+                            Download
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Handle FlipHTML5 modal
+        function openFlipbook(url) {
+            const modal = document.getElementById('flipbook-modal');
+            const frame = document.getElementById('flipbook-frame');
+            frame.src = url;
+            modal.style.display = 'block';
+        }
+
+        // Close modal
+        document.querySelector('.close-modal').addEventListener('click', function() {
+            const modal = document.getElementById('flipbook-modal');
+            const frame = document.getElementById('flipbook-frame');
+            frame.src = '';
+            modal.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
